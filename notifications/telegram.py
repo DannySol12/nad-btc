@@ -3,7 +3,7 @@ notifications/telegram.py — all Telegram message sending and formatting.
 """
 import requests
 from datetime import datetime, timezone
-from config import TELEGRAM_TOKEN, CHAT_ID, USD_QUOTE_2DP, ACCOUNT_SIZE, TP1_CLOSE_PCT, LOT_SIZE
+from config import TELEGRAM_TOKEN, CHAT_ID, USD_QUOTE_2DP, ACCOUNT_SIZE, LOT_SIZE
 
 
 def send_message(text):
@@ -97,39 +97,14 @@ def notify_approaching_tp(symbol, direction, entry, current, tp):
     send_message(msg.strip())
 
 
-def notify_partial_close(symbol, direction, entry, current, pnl_usd, trail_sl):
-    action = "BUY 🟢" if direction == "BUY" else "SELL 🔴"
-    pct = pnl_usd / ACCOUNT_SIZE * 100
-    msg = f"""
-✂️ <b>PARTIAL CLOSE — {symbol} | {action}</b>
-
-📍 Entry:    {fmt(symbol, entry)}
-💹 Current:  {fmt(symbol, current)}
-
-👉 <b>ACTION REQUIRED:</b>
-   Manually close {int(TP1_CLOSE_PCT*100)}% of your position now.
-
-💵 <b>Partial P&L: +${pnl_usd:,.2f}</b>  ({pct:+.2f}% of account)
-
-🔁 <b>Trailing stop now active on the remainder</b>
-   New stop: {fmt(symbol, trail_sl)}
-   Move your SL there manually and let the rest run.
-
-⏰ {datetime.now(timezone.utc).strftime('%H:%M')} UTC
-"""
-    send_message(msg.strip())
-
-
-def notify_tp_hit(symbol, direction, entry, tp, pnl_usd, remaining_pct=1.0):
+def notify_tp_hit(symbol, direction, entry, tp, pnl_usd):
     action = "BUY 🟢" if direction == "BUY" else "SELL 🔴"
     pct    = pnl_usd / ACCOUNT_SIZE * 100
-    size_note = f"\n👉 This closes your remaining {int(remaining_pct*100)}% position" if remaining_pct < 1.0 else ""
     msg = f"""
 🎯 <b>TAKE PROFIT HIT — {symbol} | {action}</b> ✅
 
 📍 Entry: {fmt(symbol, entry)}
 🎯 TP:    {fmt(symbol, tp)}
-{size_note}
 
 💵 <b>P&L: +${pnl_usd:,.2f}</b>  ({pct:+.2f}% of account)
 
@@ -140,22 +115,15 @@ def notify_tp_hit(symbol, direction, entry, tp, pnl_usd, remaining_pct=1.0):
     send_message(msg.strip())
 
 
-def notify_sl_hit(symbol, direction, entry, sl, sl_moved, pnl_usd, tp1_hit=False, remaining_pct=1.0):
+def notify_sl_hit(symbol, direction, entry, sl, sl_moved, pnl_usd):
     action = "BUY 🟢" if direction == "BUY" else "SELL 🔴"
-    if tp1_hit:
-        tag = "TRAILING STOP HIT"
-    elif sl_moved:
-        tag = "STOPPED AT BREAKEVEN"
-    else:
-        tag = "STOP LOSS HIT"
+    tag = "STOPPED AT BREAKEVEN" if sl_moved else "STOP LOSS HIT"
     pct = pnl_usd / ACCOUNT_SIZE * 100
-    size_note = f"\n👉 This closes your remaining {int(remaining_pct*100)}% position" if tp1_hit else ""
     msg = f"""
 🛑 <b>{tag} — {symbol} | {action}</b>
 
 📍 Entry: {fmt(symbol, entry)}
 🛑 Exit:  {fmt(symbol, sl)}
-{size_note}
 
 💵 <b>P&L: ${pnl_usd:,.2f}</b>  ({pct:+.2f}% of account)
 
