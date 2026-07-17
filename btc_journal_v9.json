@@ -1,0 +1,22 @@
+{
+  "2026-07-17": [
+    {
+      "time": "00:31 UTC",
+      "symbol": "BTC/USD",
+      "direction": "SELL",
+      "entry": 64537.92295,
+      "exit": 64023.57886,
+      "pnl_usd": 257.17,
+      "result": "PARTIAL"
+    },
+    {
+      "time": "02:37 UTC",
+      "symbol": "BTC/USD",
+      "direction": "SELL",
+      "entry": 64537.92295,
+      "exit": 63509.23476,
+      "pnl_usd": 514.34,
+      "result": "WIN"
+    }
+  ]
+}
