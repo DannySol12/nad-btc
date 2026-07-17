@@ -22,7 +22,7 @@ ALLOWED_TREND_STRENGTHS = ["Strong", "Moderate", "Weak"]
 # ── Indicator / zone parameters ──
 EMA_PERIOD       = 100
 ATR_PERIOD       = 14
-MIN_ZONE_CANDLES = 6
+MIN_ZONE_CANDLES = 4
 SWING_LOOKBACK   = 10
 ZONE_LOOKBACK    = 50
 RR_RATIO         = 2.0
